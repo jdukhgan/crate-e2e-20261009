@@ -1,0 +1,10 @@
+import { homedir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { createApp } from './app.js';
+const dataDir = resolve(process.env.CRATE_DATA_DIR || join(process.env.XDG_DATA_HOME || join(homedir(), '.local/share'), 'crate'));
+const port = Number(process.env.PORT || 4317);
+const host = process.env.HOST || '127.0.0.1';
+if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT must be between 1 and 65535.');
+const app = createApp({ dataDir });
+app.server.listen(port, host, () => console.log(`Crate listening on http://${host}:${port}`));
+for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => app.server.close(() => { app.close(); process.exit(0); }));

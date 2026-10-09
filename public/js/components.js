@@ -311,6 +311,7 @@ export function albumEditor({ album, mode = 'edit', onsubmit, oncancel }) {
       setPending(save, pending, mode === 'create' ? 'Adding…' : 'Saving…');
       form.setAttribute('aria-busy', pending ? 'true' : 'false');
       cancel.setAttribute('aria-disabled', pending ? 'true' : 'false');
+      for (const field of form.querySelectorAll('input[type="text"], textarea')) field.readOnly = pending;
     },
     // Called after controls unlock; moves focus to the alert so the reason is read.
     showError(message, onretry) {

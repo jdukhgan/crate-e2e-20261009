@@ -24,12 +24,14 @@ export function mountLibrary(root, { store }) {
     q: '',
     status: 'all',
     selectedId: null,
+    savedSelection: null,
     mode: 'view', // view | edit | create | confirm-delete
     loading: true,
     loadError: null,
     opener: null, // element that opened the pane/editor, for focus return
     paneOpen: false, // overlay layouts only
     listToken: 0,
+    mutationPending: false,
   };
   const overlayMq = window.matchMedia(OVERLAY_QUERY);
   const isOverlay = () => overlayMq.matches;
@@ -71,10 +73,44 @@ export function mountLibrary(root, { store }) {
     scrim, toastRegion, liveRegion);
   root.replaceChildren(shell);
 
+  const pendingNotice = h('p', { class: 'pane-hint', id: 'mutation-pending', role: 'status', text: 'Saving your change… Collection navigation is available when it finishes.' });
+  function setMutationPending(pending, message = 'Saving your change…') {
+    state.mutationPending = pending;
+    searchInput.readOnly = pending;
+    if (pending) {
+      clearTimeout(searchTimer);
+      pendingNotice.textContent = `${message} Collection navigation is available when it finishes.`;
+      pane.querySelector('.pane-inner')?.prepend(pendingNotice);
+      for (const el of shell.querySelectorAll('button, input[type="radio"]')) {
+        if (!el.hasAttribute('data-pending')) {
+          el.dataset.pendingNavigation = el.getAttribute('aria-disabled') ?? '';
+          el.setAttribute('aria-disabled', 'true');
+          el.setAttribute('aria-describedby', 'mutation-pending');
+        }
+      }
+    } else {
+      pendingNotice.remove();
+      for (const el of shell.querySelectorAll('[data-pending-navigation]')) {
+        const previous = el.dataset.pendingNavigation;
+        if (previous) el.setAttribute('aria-disabled', previous); else el.removeAttribute('aria-disabled');
+        el.removeAttribute('aria-describedby');
+        delete el.dataset.pendingNavigation;
+      }
+    }
+  }
+  shell.addEventListener('click', event => {
+    if (state.mutationPending) { event.preventDefault(); event.stopImmediatePropagation(); }
+  }, true);
+  shell.addEventListener('keydown', event => {
+    if (state.mutationPending && ['Enter', ' ', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+      event.preventDefault(); event.stopImmediatePropagation();
+    }
+  }, true);
+
   // ------------------------------------------------------------ derived
   const matchesStatus = (a) => state.status === 'all' || a.status === state.status;
   const visible = () => state.albums.filter(matchesStatus);
-  const selected = () => state.albums.find((a) => a.id === state.selectedId) ?? null;
+  const selected = () => state.albums.find((a) => a.id === state.selectedId) ?? (state.savedSelection?.id === state.selectedId ? state.savedSelection : null);
   const counts = () => {
     const c = { all: state.albums.length };
     for (const s of STATUSES) c[s] = state.albums.filter((a) => a.status === s).length;
@@ -119,8 +155,11 @@ export function mountLibrary(root, { store }) {
     }
     if (state.loadError) {
       resultLine.textContent = '';
-      wallSlot.replaceChildren(h('div', { class: 'wall-error' },
-        inlineAlert({ message: state.loadError, retryLabel: 'Reload collection', onretry: () => load() })));
+      const error = h('div', { class: 'wall-error' }, inlineAlert({ message: state.loadError, retryLabel: 'Reload collection', onretry: () => load() }));
+      if (state.albums.length) {
+        wall.replaceChildren(...visible().map(album => albumTile(album, { selected: album.id === state.selectedId, onselect: (a, btn) => select(a.id, btn) })));
+        wallSlot.replaceChildren(error, wall);
+      } else wallSlot.replaceChildren(error);
       return;
     }
     renderFilters();
@@ -248,7 +287,9 @@ export function mountLibrary(root, { store }) {
   let shownId = null;
 
   // ------------------------------------------------------------ actions
-  async function load({ announceResult = false, keepSelection = true } = {}) {
+  async function load({ announceResult = false, keepSelection = true, afterMutation = false } = {}) {
+    if (state.mutationPending && !afterMutation) return;
+    state.savedSelection = null;
     const token = ++state.listToken;
     state.loading = true;
     renderWall();
@@ -334,16 +375,21 @@ export function mountLibrary(root, { store }) {
   async function submitEditor(draft, ed) {
     const { value, errors } = validateAlbumInput(draft);
     if (Object.keys(errors).length) { ed.showFieldErrors(errors); return; }
+    if (state.mutationPending) return;
     ed.setPending(true);
+    setMutationPending(true, state.mode === 'create' ? 'Adding your album…' : 'Saving your changes…');
     ed.clearError();
     const creating = state.mode === 'create';
     const editingId = state.selectedId;
     try {
       const saved = creating ? await store.create(value) : await store.update(editingId, value);
-      ed.setPending(false);
       state.mode = 'view';
       state.selectedId = saved.id;
-      await load({ keepSelection: true });
+      await load({ keepSelection: true, afterMutation: true });
+      setMutationPending(false);
+      ed.setPending(false);
+      state.selectedId = saved.id;
+      state.savedSelection = saved;
       toast(creating ? `Added “${saved.title}”` : 'Changes saved', 'success');
       announce(creating ? `Added ${saved.title}.` : `Saved ${saved.title}.`);
       if (creating) {
@@ -356,6 +402,7 @@ export function mountLibrary(root, { store }) {
         renderPane({ focus: 'edit' });
       }
     } catch (err) {
+      setMutationPending(false);
       ed.setPending(false);
       if (err.status === 404) return handleGone();
       if (err.status === 400 && err.fields) { ed.showFieldErrors(err.fields); return; }
@@ -365,7 +412,10 @@ export function mountLibrary(root, { store }) {
 
   async function changeStatus(album, status, input, switcher, errorSlot) {
     if (switcher.hasAttribute('data-pending')) return;
+    if (state.mutationPending) return;
     const previous = album.status;
+    let failureAlert;
+    setMutationPending(true, 'Saving listening status…');
     switcher.setAttribute('data-pending', '');
     switcher.setAttribute('aria-busy', 'true');
     input.closest('.status-option').classList.add('is-pending');
@@ -378,18 +428,21 @@ export function mountLibrary(root, { store }) {
       pane.querySelector('.sleeve')?.setAttribute('data-status', saved.status);
       announce(`${saved.title} marked ${STATUS_LABELS[saved.status]}.`);
     } catch (err) {
-      if (err.status === 404) return handleGone();
+      if (err.status === 404) { setMutationPending(false); return handleGone(); }
       const back = switcher.querySelector(`input[value="${previous}"]`);
       back.checked = true;
-      errorSlot.replaceChildren(inlineAlert({
+      failureAlert = inlineAlert({
         message: friendly(err, `Couldn’t change the status to ${STATUS_LABELS[status]}.`),
         onretry: () => { const target = switcher.querySelector(`input[value="${status}"]`); target.checked = true; changeStatus(album, status, target, switcher, errorSlot); },
-      }));
+      });
+      errorSlot.replaceChildren(failureAlert);
     } finally {
+      setMutationPending(false);
       switcher.removeAttribute('data-pending');
       switcher.setAttribute('aria-busy', 'false');
       switcher.querySelector('.is-pending')?.classList.remove('is-pending');
       for (const r of switcher.querySelectorAll('input')) r.removeAttribute('aria-disabled');
+      if (failureAlert) failureAlert.focus();
       // Keep focus on the group so keyboard users stay in place.
       if (pane.contains(document.activeElement) === false && switcher.isConnected) switcher.querySelector('input:checked')?.focus();
     }
@@ -402,7 +455,9 @@ export function mountLibrary(root, { store }) {
 
   async function confirmDelete(album, confirmBtn, keepBtn, group) {
     if (isPending(confirmBtn)) return;
+    if (state.mutationPending) return;
     setPending(confirmBtn, true, 'Deleting…');
+    setMutationPending(true, 'Deleting your album…');
     keepBtn.setAttribute('aria-disabled', 'true');
     group.querySelector('.inline-alert')?.remove();
     const order = visible().map((a) => a.id);
@@ -410,19 +465,21 @@ export function mountLibrary(root, { store }) {
     try {
       await store.remove(album.id);
     } catch (err) {
+      setMutationPending(false);
       setPending(confirmBtn, false);
       keepBtn.setAttribute('aria-disabled', 'false');
       if (err.status === 404) return handleGone();
-      const alertEl = inlineAlert({ message: friendly(err, 'The album couldn’t be deleted.') });
+      const alertEl = inlineAlert({ message: friendly(err, 'The album couldn’t be deleted.'), onretry: () => confirmDelete(album, confirmBtn, keepBtn, group) });
       group.append(alertEl);
-      confirmBtn.focus();
+      alertEl.focus();
       return;
     }
     state.mode = 'view';
     const neighbour = order[index + 1] ?? order[index - 1] ?? null;
     state.selectedId = isOverlay() ? null : neighbour;
     state.paneOpen = false;
-    await load();
+    await load({ afterMutation: true });
+    setMutationPending(false);
     renderPane({ focus: false });
     shownId = state.selectedId;
     toast(`Deleted “${album.title}”`, 'neutral');
@@ -479,7 +536,24 @@ export function mountLibrary(root, { store }) {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && isOverlay() && state.paneOpen && state.mode === 'view') closePane();
   });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Tab' || !isOverlay() || !state.paneOpen) return;
+    const controls = [...pane.querySelectorAll('button, input, textarea, [tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
+    const first = controls[0], last = controls.at(-1);
+    if (event.shiftKey && (document.activeElement === first || !controls.includes(document.activeElement))) { event.preventDefault(); last?.focus(); }
+    else if (!event.shiftKey && (document.activeElement === last || !controls.includes(document.activeElement))) { event.preventDefault(); first?.focus(); }
+  });
   overlayMq.addEventListener('change', () => {
+    if (state.mutationPending || state.mode === 'create' || state.mode === 'edit') {
+      state.paneOpen = isOverlay();
+      shell.classList.toggle('pane-open', isOverlay());
+      scrim.hidden = !isOverlay();
+      pane.hidden = false;
+      if (isOverlay()) { pane.setAttribute('role', 'dialog'); pane.setAttribute('aria-modal', 'true'); }
+      else { pane.removeAttribute('role'); pane.removeAttribute('aria-modal'); }
+      for (const el of [shell.querySelector('.topbar'), shell.querySelector('.collection')]) el.inert = isOverlay();
+      return;
+    }
     state.paneOpen = isOverlay() && state.mode !== 'view';
     if (!isOverlay() && !state.selectedId && visible().length) state.selectedId = visible()[0].id;
     renderWall();
