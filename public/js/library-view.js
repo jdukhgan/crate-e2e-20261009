@@ -111,6 +111,17 @@ export function mountLibrary(root, { store }) {
   const matchesStatus = (a) => state.status === 'all' || a.status === state.status;
   const visible = () => state.albums.filter(matchesStatus);
   const selected = () => state.albums.find((a) => a.id === state.selectedId) ?? (state.savedSelection?.id === state.selectedId ? state.savedSelection : null);
+  function retainSavedAlbum(saved) {
+    // A committed write is authoritative even if the following list fails.
+    // Keep the query result and its counts consistent, retaining hidden details.
+    const q = state.q.trim().toLocaleLowerCase();
+    const matchesQuery = !q || saved.title.toLocaleLowerCase().includes(q) || saved.artist.toLocaleLowerCase().includes(q);
+    const index = state.albums.findIndex(a => a.id === saved.id);
+    if (!matchesQuery) state.albums = state.albums.filter(a => a.id !== saved.id);
+    else if (index >= 0) state.albums[index] = saved;
+    else state.albums.push(saved);
+    state.savedSelection = saved;
+  }
   const counts = () => {
     const c = { all: state.albums.length };
     for (const s of STATUSES) c[s] = state.albums.filter((a) => a.status === s).length;
@@ -134,6 +145,11 @@ export function mountLibrary(root, { store }) {
     for (const key of ['all', ...STATUSES]) {
       const id = `filter-${key}`;
       const input = h('input', { type: 'radio', name: 'status-filter', id, value: key, class: 'sr-only-input', checked: state.status === key });
+      if (state.mutationPending) {
+        input.dataset.pendingNavigation = '';
+        input.setAttribute('aria-disabled', 'true');
+        input.setAttribute('aria-describedby', 'mutation-pending');
+      }
       input.addEventListener('change', () => { state.status = key; renderWall(); announce(summary()); });
       track.append(h('label', { class: 'filter', for: id, dataset: { status: key } },
         input,
@@ -147,6 +163,7 @@ export function mountLibrary(root, { store }) {
 
   function renderWall() {
     wallSlot.setAttribute('aria-busy', state.loading ? 'true' : 'false');
+    renderFilters();
     if (state.loading && !state.albums.length) {
       resultLine.textContent = 'Loading your collection…';
       wall.replaceChildren(...skeletonTiles(8));
@@ -162,7 +179,6 @@ export function mountLibrary(root, { store }) {
       } else wallSlot.replaceChildren(error);
       return;
     }
-    renderFilters();
     const items = visible();
     // Visible only when narrowed; stays in the accessible description either way.
     resultLine.replaceChildren(h('span', { text: summary() }));
@@ -289,7 +305,6 @@ export function mountLibrary(root, { store }) {
   // ------------------------------------------------------------ actions
   async function load({ announceResult = false, keepSelection = true, afterMutation = false } = {}) {
     if (state.mutationPending && !afterMutation) return;
-    state.savedSelection = null;
     const token = ++state.listToken;
     state.loading = true;
     renderWall();
@@ -297,6 +312,9 @@ export function mountLibrary(root, { store }) {
       const albums = await store.list({ q: state.q.trim() });
       if (token !== state.listToken) return; // a newer query won
       state.albums = albums;
+      const refreshedSelection = albums.find(a => a.id === state.savedSelection?.id);
+      if (refreshedSelection) state.savedSelection = refreshedSelection;
+      else if (!state.q.trim()) state.savedSelection = null;
       state.loadError = null;
     } catch (err) {
       if (token !== state.listToken) return;
@@ -383,13 +401,13 @@ export function mountLibrary(root, { store }) {
     const editingId = state.selectedId;
     try {
       const saved = creating ? await store.create(value) : await store.update(editingId, value);
+      retainSavedAlbum(saved);
       state.mode = 'view';
       state.selectedId = saved.id;
       await load({ keepSelection: true, afterMutation: true });
       setMutationPending(false);
       ed.setPending(false);
       state.selectedId = saved.id;
-      state.savedSelection = saved;
       toast(creating ? `Added “${saved.title}”` : 'Changes saved', 'success');
       announce(creating ? `Added ${saved.title}.` : `Saved ${saved.title}.`);
       if (creating) {
@@ -474,6 +492,8 @@ export function mountLibrary(root, { store }) {
       alertEl.focus();
       return;
     }
+    state.albums = state.albums.filter(a => a.id !== album.id);
+    if (state.savedSelection?.id === album.id) state.savedSelection = null;
     state.mode = 'view';
     const neighbour = order[index + 1] ?? order[index - 1] ?? null;
     state.selectedId = isOverlay() ? null : neighbour;
