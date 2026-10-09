@@ -1,0 +1,9 @@
+.kandev/
+.env*
+*.sqlite*
+*.db
+__pycache__/
+.venv/
+node_modules/
+playwright-report/
+test-results/
