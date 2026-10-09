@@ -206,9 +206,11 @@ export function createToaster(region) {
   let timer;
   return function toast(message, tone = 'neutral') {
     clearTimeout(timer);
-    region.replaceChildren(h('div', { class: `toast is-${tone}` },
-      icon(tone === 'danger' ? 'alert' : 'check'), h('span', { text: message })));
-    timer = setTimeout(() => region.replaceChildren(), 4000);
+    const notification = h('div', { class: `toast is-${tone}` },
+      icon(tone === 'danger' ? 'alert' : 'check'), h('span', { text: message }));
+    region.replaceChildren(notification);
+    // Expiry owns this toast, even if a pending notice has replaced it.
+    timer = setTimeout(() => notification.remove(), 4000);
   };
 }
 
