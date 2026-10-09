@@ -169,7 +169,7 @@ export function skeletonTiles(count = 8) {
 // The selected record slides out of its sleeve. Call `playSleeve(el)` after
 // inserting to run the slide; reduced motion shows the resting position.
 export function sleeve(album) {
-  return h('figure', { class: 'sleeve', dataset: { status: album.status } },
+  return h('figure', { class: 'sleeve is-out', dataset: { status: album.status } },
     h('div', { class: 'disc', 'aria-hidden': 'true' },
       h('div', { class: 'disc-label' }, cover(album))),
     h('div', { class: 'sleeve-cover' }, cover(album, { decorative: false })));

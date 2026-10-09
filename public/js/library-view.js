@@ -73,14 +73,14 @@ export function mountLibrary(root, { store }) {
     scrim, toastRegion, liveRegion);
   root.replaceChildren(shell);
 
-  const pendingNotice = h('p', { class: 'pane-hint', id: 'mutation-pending', role: 'status', text: 'Saving your change… Collection navigation is available when it finishes.' });
+  const pendingNotice = h('p', { class: 'toast', id: 'mutation-pending', role: 'status', text: 'Saving your change… Collection navigation is available when it finishes.' });
   function setMutationPending(pending, message = 'Saving your change…') {
     state.mutationPending = pending;
     searchInput.readOnly = pending;
     if (pending) {
       clearTimeout(searchTimer);
       pendingNotice.textContent = `${message} Collection navigation is available when it finishes.`;
-      pane.querySelector('.pane-inner')?.prepend(pendingNotice);
+      toastRegion.replaceChildren(pendingNotice);
       for (const el of shell.querySelectorAll('button, input[type="radio"]')) {
         if (!el.hasAttribute('data-pending')) {
           el.dataset.pendingNavigation = el.getAttribute('aria-disabled') ?? '';
