@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="VII cover: the numeral seven drawn in heavy bars on cream with a red rule">
+  <rect width="600" height="600" fill="#f2ede1"/>
+  <g fill="#141414">
+    <polygon points="80,140 140,140 210,440 170,440"/>
+    <polygon points="340,140 280,140 210,440 230,440 250,360"/>
+    <rect x="370" y="140" width="40" height="300"/>
+    <rect x="460" y="140" width="40" height="300"/>
+  </g>
+  <rect x="80" y="480" width="440" height="10" fill="#d8402a"/>
+  <g fill="#141414" opacity=".5"><rect x="80" y="512" width="7" height="22"/><rect x="100" y="512" width="7" height="22"/><rect x="120" y="512" width="7" height="22"/><rect x="140" y="512" width="7" height="22"/><rect x="160" y="512" width="7" height="22"/><rect x="180" y="512" width="7" height="22"/><rect x="200" y="512" width="7" height="22"/></g>
+</svg>

@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "note": "Shared visible-content fixture owned by the Designer. Eight fictional albums by fictional artists; covers are original SVG artwork in public/covers. Builder seeds from this file once. Do not add, rename or re-order records without the Designer.",
+  "albums": [
+    {
+      "id": "alb-tidewater-hymnal",
+      "title": "Tidewater Hymnal",
+      "artist": "The Lantern Choir",
+      "status": "heard",
+      "notes": "Recorded in a decommissioned lighthouse — you can hear the stairwell on every vocal.\n\nBest track: \"Fog Signal\". Play it loud, late, with the window open.",
+      "cover": "/covers/tidewater-hymnal.svg"
+    },
+    {
+      "id": "alb-sodium-nights",
+      "title": "Sodium Nights",
+      "artist": "Kesh Varga",
+      "status": "listening",
+      "notes": "Side A is a slow burn; side B > side A. The synth on track 6 sounds like a streetlight humming.",
+      "cover": "/covers/sodium-nights.svg"
+    },
+    {
+      "id": "alb-field-recordings",
+      "title": "Field Recordings for an Empty Room",
+      "artist": "Ana Lindqvist Trio",
+      "status": "want_to_hear",
+      "notes": "Recommended by M. at the record fair. Supposedly the piano was left slightly out of tune on purpose.",
+      "cover": "/covers/field-recordings.svg"
+    },
+    {
+      "id": "alb-concrete-garden",
+      "title": "Concrete Garden",
+      "artist": "Mirela Dobos",
+      "status": "heard",
+      "notes": "Brutalist ambient. Strange that something this cold can feel so kind.",
+      "cover": "/covers/concrete-garden.svg"
+    },
+    {
+      "id": "alb-low-orbit-lullabies",
+      "title": "Low Orbit Lullabies",
+      "artist": "Saturn Junior",
+      "status": "want_to_hear",
+      "notes": "",
+      "cover": "/covers/low-orbit-lullabies.svg"
+    },
+    {
+      "id": "alb-paper-moons",
+      "title": "Paper Moons over Osaka",
+      "artist": "Hana Kirisame & the Night Ferry",
+      "status": "listening",
+      "notes": "Bought on the strength of the sleeve alone.\n\nThird listen: the title track keeps opening up. The bass clarinet on \"Harbour Light, 2 a.m.\" is the whole reason to own this.\n\nTo do: find the 2019 live session they mention in the liner notes.",
+      "cover": "/covers/paper-moons.svg"
+    },
+    {
+      "id": "alb-vii",
+      "title": "VII",
+      "artist": "Ostinato",
+      "status": "heard",
+      "notes": "Seven pieces, seven time signatures. Mathematical, never cold.",
+      "cover": "/covers/vii.svg"
+    },
+    {
+      "id": "alb-brief-history-of-rain",
+      "title": "A Brief History of Rain (Expanded Edition, Remastered from the Original Reel-to-Reel Tapes)",
+      "artist": "Theo Marchetti and the Cellar Strings Ensemble",
+      "status": "want_to_hear",
+      "notes": "",
+      "cover": "/covers/brief-history-of-rain.svg"
+    }
+  ]
+}

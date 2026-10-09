@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Concrete Garden cover: grey brutalist blocks with one green circle">
+  <rect width="600" height="600" fill="#8f8d87"/>
+  <rect x="60" y="60" width="220" height="300" fill="#6f6d68"/>
+  <rect x="280" y="140" width="260" height="160" fill="#b4b1aa"/>
+  <rect x="60" y="360" width="480" height="180" fill="#5a5853"/>
+  <rect x="320" y="360" width="80" height="180" fill="#a3a099"/>
+  <g fill="#6f6d68"><rect x="300" y="170" width="40" height="40"/><rect x="360" y="170" width="40" height="40"/><rect x="420" y="170" width="40" height="40"/><rect x="480" y="170" width="40" height="40"/></g>
+  <circle cx="200" cy="420" r="70" fill="#3f7a4a"/>
+  <circle cx="200" cy="420" r="70" fill="none" stroke="#2c5a35" stroke-width="10"/>
+</svg>

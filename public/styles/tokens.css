@@ -1,0 +1,154 @@
+/* Crate design tokens. Every colour, size, radius, shadow and duration used by
+   components.css comes from here. Themes switch by [data-theme] on <html>,
+   which the inline boot script in <head> sets from the saved choice or the OS
+   preference before first paint (see docs/design.md). */
+
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url(../fonts/bricolage-grotesque-latin-opsz-normal.woff2) format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url(../fonts/bricolage-grotesque-latin-ext-opsz-normal.woff2) format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../fonts/inter-latin-opsz-normal.woff2) format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../fonts/inter-latin-ext-opsz-normal.woff2) format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  /* Type */
+  --font-display: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --text-xs: 0.75rem;     /* 12 meta */
+  --text-sm: 0.8125rem;   /* 13 labels, chips */
+  --text-md: 0.9375rem;   /* 15 body, controls */
+  --text-lg: 1.125rem;    /* 18 tile title (wall) */
+  --text-xl: 1.5rem;      /* 24 section / wordmark */
+  --text-2xl: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem); /* detail title */
+  --leading-tight: 1.12;
+  --leading-body: 1.55;
+  --tracking-display: -0.025em;
+  --tracking-label: 0.01em;
+
+  /* Space (4px base) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --cover-radius: 3px;
+
+  /* Layout */
+  --header-h: 4rem;
+  --pane-w: clamp(360px, 32vw, 440px);
+  --tile-min: 156px;
+  --touch: 44px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 140ms;
+  --dur-med: 260ms;
+  --dur-slow: 620ms;
+
+  color-scheme: light;
+  /* Light: warm paper and ink, cadmium accent */
+  --bg: oklch(95.5% 0.012 85);
+  --bg-sunk: oklch(92.5% 0.014 82);
+  --surface: oklch(98.5% 0.006 85);
+  --surface-raised: oklch(100% 0 0);
+  --ink: oklch(21% 0.012 60);
+  --ink-muted: oklch(44% 0.014 60);
+  --ink-faint: oklch(50% 0.012 60);
+  --line: oklch(86% 0.012 75);
+  --line-strong: oklch(74% 0.014 70);
+  --accent: oklch(55% 0.19 36);
+  --accent-ink: oklch(99% 0.005 85);
+  --accent-soft: oklch(90% 0.05 45);
+  --accent-text: oklch(48% 0.18 34);
+  --focus: oklch(55% 0.19 36);
+  --selection: oklch(87% 0.08 50);
+
+  --status-want: oklch(44% 0.014 60);
+  --status-want-soft: oklch(90% 0.012 75);
+  --status-listening: oklch(50% 0.19 36);
+  --status-listening-soft: oklch(91% 0.05 45);
+  --status-heard: oklch(45% 0.09 145);
+  --status-heard-soft: oklch(91% 0.04 145);
+
+  --danger: oklch(50% 0.2 27);
+  --danger-soft: oklch(94% 0.03 27);
+  --success: oklch(45% 0.09 145);
+
+  --disc: oklch(17% 0.005 60);
+  --disc-groove: oklch(28% 0.005 60);
+  --shadow-tile: 0 1px 2px oklch(20% 0.02 60 / 0.10), 0 6px 16px -6px oklch(20% 0.02 60 / 0.18);
+  --shadow-lift: 0 2px 4px oklch(20% 0.02 60 / 0.10), 0 18px 32px -12px oklch(20% 0.02 60 / 0.32);
+  --shadow-pane: -1px 0 0 var(--line);
+  --scrim: oklch(15% 0.01 60 / 0.45);
+}
+
+/* Dark: late-night listening room. Same cadmium, lifted for dark ground. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: oklch(17.5% 0.01 60);
+  --bg-sunk: oklch(15% 0.008 60);
+  --surface: oklch(21% 0.011 60);
+  --surface-raised: oklch(25% 0.012 60);
+  --ink: oklch(94% 0.012 85);
+  --ink-muted: oklch(76% 0.014 75);
+  --ink-faint: oklch(68% 0.012 70);
+  --line: oklch(30% 0.012 60);
+  --line-strong: oklch(42% 0.014 60);
+  --accent: oklch(70% 0.17 42);
+  --accent-ink: oklch(17% 0.01 60);
+  --accent-soft: oklch(32% 0.07 40);
+  --accent-text: oklch(76% 0.15 45);
+  --focus: oklch(76% 0.15 45);
+  --selection: oklch(40% 0.1 40);
+
+  --status-want: oklch(78% 0.014 75);
+  --status-want-soft: oklch(28% 0.01 60);
+  --status-listening: oklch(76% 0.15 45);
+  --status-listening-soft: oklch(31% 0.07 40);
+  --status-heard: oklch(78% 0.1 145);
+  --status-heard-soft: oklch(29% 0.04 145);
+
+  --danger: oklch(72% 0.16 27);
+  --danger-soft: oklch(28% 0.06 27);
+  --success: oklch(78% 0.1 145);
+
+  --disc: oklch(10% 0.004 60);
+  --disc-groove: oklch(22% 0.004 60);
+  --shadow-tile: 0 1px 2px oklch(0% 0 0 / 0.4), 0 8px 18px -8px oklch(0% 0 0 / 0.6);
+  --shadow-lift: 0 2px 4px oklch(0% 0 0 / 0.4), 0 20px 36px -14px oklch(0% 0 0 / 0.75);
+  --scrim: oklch(5% 0 0 / 0.6);
+}

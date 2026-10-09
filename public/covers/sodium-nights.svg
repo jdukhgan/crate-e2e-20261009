@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Sodium Nights cover: amber streetlight cones on a violet night">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffb347" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#ffb347" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="#24133a"/>
+  <polygon points="150,90 40,600 260,600" fill="url(#g)"/>
+  <polygon points="330,140 250,600 410,600" fill="url(#g)" opacity=".7"/>
+  <polygon points="480,190 425,600 535,600" fill="url(#g)" opacity=".5"/>
+  <g fill="#ffd27a">
+    <rect x="128" y="76" width="44" height="14" rx="7"/>
+    <rect x="314" y="128" width="32" height="12" rx="6"/>
+    <rect x="468" y="180" width="24" height="10" rx="5"/>
+  </g>
+  <rect y="560" width="600" height="40" fill="#12081f"/>
+</svg>

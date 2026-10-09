@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Tidewater Hymnal cover: a pale lamp disc over stacked tide lines">
+  <rect width="600" height="600" fill="#1d3b4a"/>
+  <circle cx="300" cy="230" r="120" fill="#f1e6c8"/>
+  <circle cx="300" cy="230" r="120" fill="none" stroke="#1d3b4a" stroke-width="6" stroke-dasharray="2 14"/>
+  <g fill="none" stroke="#f1e6c8" stroke-width="10" stroke-linecap="round">
+    <path d="M40 390 Q 110 360 180 390 T 320 390 T 460 390 T 600 390"/>
+    <path d="M0 440 Q 70 410 140 440 T 280 440 T 420 440 T 560 440" opacity=".8"/>
+    <path d="M40 490 Q 110 460 180 490 T 320 490 T 460 490 T 600 490" opacity=".6"/>
+    <path d="M0 540 Q 70 510 140 540 T 280 540 T 420 540 T 560 540" opacity=".4"/>
+  </g>
+  <rect x="294" y="80" width="12" height="36" fill="#e2552d"/>
+</svg>

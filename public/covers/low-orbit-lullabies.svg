@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Low Orbit Lullabies cover: a small planet ringed by dotted orbits on deep blue">
+  <rect width="600" height="600" fill="#0e1a3d"/>
+  <g fill="none" stroke="#8fb3ff" stroke-width="3" stroke-dasharray="1 12" stroke-linecap="round">
+    <ellipse cx="300" cy="320" rx="250" ry="90" transform="rotate(-14 300 320)"/>
+    <ellipse cx="300" cy="320" rx="190" ry="66" transform="rotate(-14 300 320)"/>
+    <ellipse cx="300" cy="320" rx="130" ry="44" transform="rotate(-14 300 320)" opacity=".7"/>
+  </g>
+  <circle cx="300" cy="320" r="62" fill="#f4c95d"/>
+  <path d="M238 320 A62 62 0 0 0 362 320 Z" fill="#e4a93a"/>
+  <circle cx="520" cy="230" r="14" fill="#f7e3ef"/>
+  <g fill="#f7e3ef"><circle cx="90" cy="90" r="3"/><circle cx="170" cy="150" r="2"/><circle cx="460" cy="80" r="2.5"/><circle cx="540" cy="520" r="2"/><circle cx="70" cy="500" r="3"/><circle cx="380" cy="160" r="1.8"/></g>
+</svg>
